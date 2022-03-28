@@ -10,7 +10,7 @@ var router = express.Router();
 //@route GET api/user
 const getUsers = expressAsyncHandler(async(request, response) => {
     const users = await User.find();
-    response.status(201).json({
+    response.status(200).json({
         status: 'success',
         data: users
     });
@@ -68,5 +68,36 @@ const insertRecord = expressAsyncHandler(async(request, response) => {
 
 });
 
-export { insertRecord, getUsers };
+//@desc delete record 
+//@route DELETE api/user/:id
+const deleteRecord = expressAsyncHandler(async(request, response) => {
+    const { email } = request.body;
+    if(email == undefined) {
+        return response.status(400).json({
+            error: 'Missing parameter data'
+        });
+    }
+    const user = await User.find({ email });
+
+    if(user) {
+        const deleted = await User.deleteOne({ email });
+        if(deleted) {
+            response.status(204).json({
+                status: 'success',
+                message: 'User Successfully Deleted.'
+            });
+        } else {
+            return response.status(400).json({
+                error: 'User not found'
+            });
+        }
+    } else {
+        return response.status(400).json({
+            error: 'User not found'
+        });
+    }
+    
+});
+
+export { insertRecord, getUsers, deleteRecord };
 
