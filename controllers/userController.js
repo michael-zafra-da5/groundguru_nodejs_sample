@@ -6,6 +6,8 @@ import { validationResult } from 'express-validator';
 
 var router = express.Router();
 
+//@desc get all user data
+//@route GET api/user
 const getUsers = expressAsyncHandler(async(request, response) => {
     const users = await User.find();
     response.status(201).json({
@@ -15,7 +17,7 @@ const getUsers = expressAsyncHandler(async(request, response) => {
 });
 
 //@desc insert new user data
-//@route POST api/createUser
+//@route POST api/user/createUser
 const insertRecord = expressAsyncHandler(async(request, response) => {
     // Express Validation
     const error = validationResult(request);
@@ -65,37 +67,6 @@ const insertRecord = expressAsyncHandler(async(request, response) => {
     }
 
 });
-
-// function insertRecord(request, response) {
-//     var user = new User();
-//     user.first_name = request.body.first_name;
-//     user.last_name  = request.body.last_name;
-//     user.email      = request.body.email;
-//     user.password   = request.body.password;
-
-//     user.save((err,doc) => {
-//         if(!err) {
-//             response.redirect('/user/list');
-//         } else {
-//             console.log("Error insert: " + err);
-//         }
-//     });
-// }
-
-function updateRecord(request, response) {
-    User.findOneAndUpdate(
-        {_id:request.body._id},
-        request.body,
-        {new:true},
-        (err, doc) => {
-            if(!err) {
-                response.redirect('/user/list');
-            } else {
-                console.log("Error update: " + err);
-            }
-        }
-        );
-}
 
 export { insertRecord, getUsers };
 
