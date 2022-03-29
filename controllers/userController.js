@@ -9,7 +9,7 @@ var router = express.Router();
 //@desc get all user data
 //@route GET api/user
 const getUsers = expressAsyncHandler(async(request, response) => {
-    const users = await User.find();
+    const users = await User.find({}, { password: 0, email: 0 });
     response.status(200).json({
         status: 'success',
         data: users
@@ -168,7 +168,7 @@ const getUser = expressAsyncHandler(async(request, response) => {
     }
 
     var doc_id = new mongoose.Types.ObjectId(id);
-    const user = await User.findById(doc_id);
+    const user = await User.findById(doc_id, { password: 0 });
 
     if(user) {
         response.status(200).json({
