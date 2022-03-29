@@ -150,5 +150,38 @@ const updateRecord = expressAsyncHandler(async(request, response) => {
     
 });
 
-export { insertRecord, getUsers, deleteRecord, updateRecord };
+//@desc get user record
+//@route GET api/user/:id
+const getUser = expressAsyncHandler(async(request, response) => {
+    const { id } = request.body;
+    if(id == undefined) {
+        return response.status(400).json({
+            error: 'Missing parameter data'
+        });
+    }
+
+    const error = validationResult(request);
+    if(!error.isEmpty()) {
+        return response.status(400).json({
+            error: error.array()
+        });
+    }
+
+    var doc_id = new mongoose.Types.ObjectId(id);
+    const user = await User.findById(doc_id);
+
+    if(user) {
+        response.status(200).json({
+            status: 'success',
+            data: user
+        });
+    } else {
+        return response.status(400).json({
+            error: 'User not found'
+        });
+    }
+    
+});
+
+export { insertRecord, getUsers, deleteRecord, updateRecord, getUser };
 

@@ -1,13 +1,14 @@
 import express from "express";
-import { insertRecord, getUsers, deleteRecord, updateRecord } from '../controllers/userController.js';
+import { insertRecord, getUsers, deleteRecord, updateRecord, getUser } from '../controllers/userController.js';
 import { body, check } from 'express-validator';
 
 const router = express.Router();
 
-router.get('/', getUsers);
+router.get('/getList', getUsers);
 router.post('/createUser', body('email').isEmail(), body('password').isLength({ min: 5 }), insertRecord);
 router.delete('/', body('id').isLength({ min: 24 }), deleteRecord);
 router.put('/', check('first_name').exists(), check('last_name').exists(), check('id').exists(), body('id').isLength({ min: 24 }) , updateRecord);
+router.post('/', check('id').exists(), body('id').isLength({ min: 24 }), getUser);
 
 
 
