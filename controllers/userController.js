@@ -71,26 +71,36 @@ const insertRecord = expressAsyncHandler(async(request, response) => {
 //@desc delete record 
 //@route DELETE api/user/:id
 const deleteRecord = expressAsyncHandler(async(request, response) => {
-    const { email } = request.body;
-    if(email == undefined) {
+    const { id } = request.body;
+    if(id == undefined) {
         return response.status(400).json({
             error: 'Missing parameter data'
         });
     }
-    const user = await User.find({ email });
+
+    const error = validationResult(request);
+    if(!error.isEmpty()) {
+        return response.status(400).json({
+            error: error.array()
+        });
+    }
+
+    var doc_id = new mongoose.Types.ObjectId(id);
+    const user = await User.findById(doc_id);
 
     if(user) {
-        const deleted = await User.deleteOne({ email });
-        if(deleted) {
-            response.status(204).json({
+        await User.deleteOne({ _id:doc_id })
+        .then(function() {
+            response.status(200).json({
                 status: 'success',
                 message: 'User Successfully Deleted.'
             });
-        } else {
-            return response.status(400).json({
-                error: 'User not found'
+        })
+        .catch(function(error) {
+            response.status(400).json({
+                error: 'User not found ' + error
             });
-        }
+        });
     } else {
         return response.status(400).json({
             error: 'User not found'
