@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import User from '../models/user.model.js';
 import expressAsyncHandler from 'express-async-handler';
 import { validationResult } from 'express-validator';
+import { generateToken } from '../utils/generateToken.js'
 
 //@desc Login
 //@route POST api/user/:id
@@ -22,7 +23,7 @@ const login = expressAsyncHandler(async(request, response) => {
         // const user = await User.findOne({ email }, { password: 0, first_name: 0, last_name: 0, _v: 0});
         response.status(200).json({
             status: 'success',
-            data: user
+            token: generateToken(user._id)
         });
     } else {
         return response.status(400).json({
