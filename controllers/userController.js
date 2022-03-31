@@ -155,19 +155,6 @@ const updateRecord = expressAsyncHandler(async(request, response) => {
 //@route GET api/user/:id
 const getUser = expressAsyncHandler(async(request, response) => {
     let token = request.header('authorization');
-    // const { id } = request.body;
-    // if(id == undefined) {
-    //     return response.status(400).json({
-    //         error: 'Missing parameter data'
-    //     });
-    // }
-
-    const error = validationResult(request);
-    if(!error.isEmpty()) {
-        return response.status(400).json({
-            error: error.array()
-        });
-    }
 
     try {
         token = request.header('authorization').split(' ')[1];
