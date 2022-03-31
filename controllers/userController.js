@@ -3,13 +3,14 @@ import mongoose from 'mongoose';
 import User from '../models/user.model.js';
 import expressAsyncHandler from 'express-async-handler';
 import { validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 
 var router = express.Router();
 
 //@desc get all user data
 //@route GET api/user
 const getUsers = expressAsyncHandler(async(request, response) => {
-    const users = await User.find({}, { password: 0, email: 0 });
+    const users = await User.find({}, { password: 0 });
     response.status(200).json({
         status: 'success',
         data: users
@@ -153,12 +154,13 @@ const updateRecord = expressAsyncHandler(async(request, response) => {
 //@desc get user record
 //@route GET api/user/:id
 const getUser = expressAsyncHandler(async(request, response) => {
-    const { id } = request.body;
-    if(id == undefined) {
-        return response.status(400).json({
-            error: 'Missing parameter data'
-        });
-    }
+    let token = request.header('authorization');
+    // const { id } = request.body;
+    // if(id == undefined) {
+    //     return response.status(400).json({
+    //         error: 'Missing parameter data'
+    //     });
+    // }
 
     const error = validationResult(request);
     if(!error.isEmpty()) {
@@ -167,15 +169,24 @@ const getUser = expressAsyncHandler(async(request, response) => {
         });
     }
 
-    var doc_id = new mongoose.Types.ObjectId(id);
-    const user = await User.findById(doc_id, { password: 0 });
+    try {
+        token = request.header('authorization').split(' ')[1];
+        const decoded = jwt.verify(token, "gR0unD@GuWu");
 
-    if(user) {
-        response.status(200).json({
-            status: 'success',
-            data: user
-        });
-    } else {
+        var doc_id = new mongoose.Types.ObjectId(decoded.id);
+        const user = await User.findById(doc_id, { password: 0 });
+    
+        if(user) {
+            response.status(200).json({
+                status: 'success',
+                data: user
+            });
+        } else {
+            return response.status(400).json({
+                error: 'User not found'
+            });
+        }
+    } catch (error) {
         return response.status(400).json({
             error: 'User not found'
         });
