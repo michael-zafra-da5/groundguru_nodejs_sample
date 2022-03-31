@@ -113,12 +113,8 @@ const deleteRecord = expressAsyncHandler(async(request, response) => {
 //@desc update record 
 //@route PUT api/user/:id
 const updateRecord = expressAsyncHandler(async(request, response) => {
-    const { id, first_name, last_name } = request.body;
-    if(id == undefined) {
-        return response.status(400).json({
-            error: 'Missing parameter data'
-        });
-    }
+    let token = request.header('authorization');
+    const { first_name, last_name } = request.body;
 
     const error = validationResult(request);
     if(!error.isEmpty()) {
@@ -127,23 +123,32 @@ const updateRecord = expressAsyncHandler(async(request, response) => {
         });
     }
 
-    var doc_id = new mongoose.Types.ObjectId(id);
-    const user = await User.findById(doc_id);
-
-    if(user) {
-        await User.updateOne({ _id:doc_id }, {first_name: first_name, last_name: last_name})
-        .then(function() {
-            response.status(200).json({
-                status: 'success',
-                message: 'User Successfully Updated.'
+    try {
+        token = request.header('authorization').split(' ')[1];
+        const decoded = jwt.verify(token, "gR0unD@GuWu");
+    
+        var doc_id = new mongoose.Types.ObjectId(decoded.id);
+        const user = await User.findById(doc_id);
+    
+        if(user) {
+            await User.updateOne({ _id:doc_id }, {first_name: first_name, last_name: last_name})
+            .then(function() {
+                response.status(200).json({
+                    status: 'success',
+                    message: 'User Successfully Updated.'
+                });
+            })
+            .catch(function(error) {
+                response.status(400).json({
+                    error: 'User not found ' + error
+                });
             });
-        })
-        .catch(function(error) {
-            response.status(400).json({
-                error: 'User not found ' + error
+        } else {
+            return response.status(400).json({
+                error: 'User not found'
             });
-        });
-    } else {
+        }
+    } catch (error) {
         return response.status(400).json({
             error: 'User not found'
         });

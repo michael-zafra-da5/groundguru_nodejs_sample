@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/getList', protect, getUsers);
 router.post('/createUser', body('email').isEmail(), body('password').isLength({ min: 5 }), insertRecord);
 router.delete('/', protect, body('id').isLength({ min: 24 }), deleteRecord);
-router.put('/', protect, check('first_name').exists(), check('last_name').exists(), check('id').exists(), body('id').isLength({ min: 24 }) , updateRecord);
+router.put('/', protect, check('first_name').exists(), check('last_name').exists() , updateRecord);
 router.post('/', protect, getUser);
 
 
