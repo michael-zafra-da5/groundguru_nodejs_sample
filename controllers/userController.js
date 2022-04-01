@@ -114,7 +114,7 @@ const deleteRecord = expressAsyncHandler(async(request, response) => {
 //@route PUT api/user/:id
 const updateRecord = expressAsyncHandler(async(request, response) => {
     let token = request.header('authorization');
-    const { first_name, last_name } = request.body;
+    const { first_name, last_name, avatar, phone, gender, country } = request.body;
 
     const error = validationResult(request);
     if(!error.isEmpty()) {
@@ -131,7 +131,15 @@ const updateRecord = expressAsyncHandler(async(request, response) => {
         const user = await User.findById(doc_id);
     
         if(user) {
-            await User.updateOne({ _id:doc_id }, {first_name: first_name, last_name: last_name})
+            await User.updateOne({ _id:doc_id }, 
+                {
+                    first_name: first_name, 
+                    last_name: last_name, 
+                    avatar: avatar,
+                    phone: phone,
+                    gender: gender,
+                    country: country,
+                })
             .then(function() {
                 response.status(200).json({
                     status: 'success',

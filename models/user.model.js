@@ -19,6 +19,18 @@ var userSchema = new mongoose.Schema(
             type: String,
             required: 'This field is required'
         },
+        avatar: {
+            type: String,
+        },
+        phone: {
+            type: String,
+        },
+        gender: {
+            type: String,
+        },
+        country: {
+            type: String,
+        },
     },
     { timestamps: true }
 );
