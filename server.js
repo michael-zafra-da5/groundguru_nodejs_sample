@@ -2,6 +2,7 @@ import connectDB from './models/db.js';
 import express from 'express';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import movieRoutes from './routes/movieRoutes.js';
 import cors from 'cors';
 
 var app = express();
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/movie', movieRoutes);
 
 app.get('/', function (request, response) {
     response.send('Hello Node JS');
