@@ -194,5 +194,52 @@ const getUser = expressAsyncHandler(async(request, response) => {
     
 });
 
-export { insertRecord, getUsers, deleteRecord, updateRecord, getUser };
+//@desc upload profile image
+//@route POST api/user/:id
+const uploadProfile = expressAsyncHandler(async(request, response) => {
+    let token = request.header('authorization');
+
+    if(!request.file) {
+        return response.status(400).json({
+            error: 'Invalid file format'
+        });
+    }
+
+    try {
+        token = request.header('authorization').split(' ')[1];
+        const decoded = jwt.verify(token, "gR0unD@GuWu");
+    
+        var doc_id = new mongoose.Types.ObjectId(decoded.id);
+        const user = await User.findById(doc_id);
+        const encoded = request.file ?  request.file.buffer.toString('base64') :  null;
+    
+        if(user) {
+            await User.updateOne({ _id:doc_id }, 
+                {
+                    avatar: encoded
+                })
+            .then(function() {
+                response.status(200).json({
+                    status: 'success',
+                    message: 'Successfully uploded profile image'
+                });
+            })
+            .catch(function(error) {
+                response.status(400).json({
+                    error: 'User not found ' + error
+                });
+            });
+        } else {
+            return response.status(400).json({
+                error: 'User not found'
+            });
+        }
+    } catch (error) {
+        return response.status(400).json({
+            error: 'User not found'
+        });
+    }
+});
+
+export { insertRecord, getUsers, deleteRecord, updateRecord, getUser, uploadProfile };
 
